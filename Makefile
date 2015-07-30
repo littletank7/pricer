@@ -2,7 +2,7 @@ CXX=g++
 RM=rm -f
 CXXFLAGS = -O3 -Wall -DNDEBUG
 
-SRCS=Order.cpp OrderWriter.cpp Parser.cpp OrderBookImpl.cpp OrderBookEng.cpp Main.cpp
+SRCS=src/Order.cpp src/OrderWriter.cpp src/Parser.cpp src/OrderBookImpl.cpp src/OrderBookEng.cpp src/Main.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: pricer

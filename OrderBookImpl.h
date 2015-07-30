@@ -5,14 +5,15 @@
 #include "OrderWriter.h"
 #include <unordered_map>
 #include <set>
+#include <memory>
 
 namespace Pricer
 {
   class OrderBookImpl
   {
   public:
-    OrderBookImpl(OrderType side, unsigned int target, OrderWriter* writer)
-      : side(side), target(target), writer(writer), size(0), lastTotal(std::numeric_limits<double>::min())
+    OrderBookImpl(OrderType side, unsigned int target, shared_ptr<OrderWriter>& pwriter)
+      : side(side), target(target), writer(pwriter), size(0), lastTotal(std::numeric_limits<double>::min())
     {}
     void Add(Order* o);
     bool Reduce(Order* o);
@@ -23,7 +24,7 @@ namespace Pricer
     
     const OrderType side;
     const unsigned int target;
-    OrderWriter* writer;
+    shared_ptr<OrderWriter> writer;
     std::set<Order*, order_compare> orders;
     std::unordered_map<string, Order*> orderIdMap;
     unsigned int size;

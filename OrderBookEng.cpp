@@ -3,10 +3,15 @@
 namespace Pricer
 {
     OrderBookEng::OrderBookEng(Parser* parser, unsigned int target, OrderWriter* writer)
-      : input(parser), writer(writer)
     {
-      bids = new OrderBookImpl(Buy, target, writer);
-      asks = new OrderBookImpl(Sell, target, writer);
+      unique_ptr<Parser> pp(parser);
+      input = std::move(pp);
+      shared_ptr<OrderWriter> pwriter(writer);
+      unique_ptr<OrderBookImpl> pobib(new OrderBookImpl(Buy, target, pwriter));
+      bids = std::move(pobib);
+      unique_ptr<OrderBookImpl> pobis(new OrderBookImpl(Sell, target, pwriter));
+      asks = std::move(pobis);
+      pwriter.reset();
     }
     
     void OrderBookEng::Run()
