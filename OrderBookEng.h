@@ -13,17 +13,12 @@ namespace Pricer
     OrderBookEng(Parser* parser, unsigned int target, OrderWriter* writer);
     void Run();
     ~OrderBookEng()
-    {
-      //delete input;
-      //delete bids;
-      //delete asks;
-      //delete writer;
-    }
+    {}
+
   private:
     unique_ptr<Parser> input;
     unique_ptr<OrderBookImpl> bids;
     unique_ptr<OrderBookImpl> asks;
-    //unique_ptr<OrderWriter> writer;
     
     //declare away
     OrderBookEng(const OrderBookEng&);

@@ -9,11 +9,11 @@ namespace Pricer
   {
   public:
     Parser() {}
-    Order* Take();    
+    shared_ptr<Order> Take();
     ~Parser() {}
     
   private:
-    Order* parse(const std::string& line);
+    shared_ptr<Order> parse(const std::string& line);
     ActionType parseAT(const std::string& s);
     OrderType parseOT(const std::string& s);
     

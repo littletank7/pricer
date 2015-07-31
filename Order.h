@@ -2,6 +2,7 @@
 #define __ORDER_H__
 
 #include <string>
+#include <memory>
 #include <assert.h>
 
 using namespace std;
@@ -96,7 +97,7 @@ namespace Pricer
   
   struct order_compare 
   {
-    bool operator() (const Order* lhs, const Order* rhs) const
+    bool operator() (const shared_ptr<Order>& lhs, const shared_ptr<Order>& rhs) const
     {      
       if(lhs == nullptr || rhs == nullptr)
       	      return false;

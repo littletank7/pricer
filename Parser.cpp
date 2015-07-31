@@ -11,7 +11,7 @@ namespace Pricer
   const std::string Parser::s_reduce = "R";
   const std::string Parser::s_sell = "S";
 
-  Order* Parser::Take()
+  shared_ptr<Order> Parser::Take()
   {
     while(true)
     {
@@ -22,7 +22,7 @@ namespace Pricer
     }
   }
 
-  Order* Parser::parse(const std::string& line)
+  shared_ptr<Order> Parser::parse(const std::string& line)
   {
     std::istringstream iss(line);
     std::vector<std::string> tokens;
@@ -31,7 +31,8 @@ namespace Pricer
          back_inserter(tokens));
     if(tokens.size() == addLen)
     {
-      Order* order = new Order(std::stoul(tokens[timeIdx],nullptr,0), tokens[oidIdx], parseAT(tokens[actionIdx]));
+      shared_ptr<Order> order(new Order(std::stoul(tokens[timeIdx],nullptr,0), \
+        tokens[oidIdx], parseAT(tokens[actionIdx])));
       order->SetSide(parseOT(tokens[sideIdx]));
       order->SetPrice(std::stod(tokens[priceIdx]));
       order->SetSize(std::stoul(tokens[sizeIdx],nullptr,0));
@@ -39,7 +40,8 @@ namespace Pricer
     }
     else if(tokens.size() == reduceLen)
     {
-      Order* order = new Order(std::stoul(tokens[timeIdx],nullptr,0), tokens[oidIdx], parseAT(tokens[actionIdx]));
+      shared_ptr<Order> order(new Order(std::stoul(tokens[timeIdx],nullptr,0), \
+        tokens[oidIdx], parseAT(tokens[actionIdx])));
       order->SetSize(std::stoul(tokens[reduceSizeIdx],nullptr,0));
       return order;
     }

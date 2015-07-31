@@ -4,7 +4,7 @@
 namespace Pricer
 {
 
-  void OrderBookImpl::Add(Order* o)
+  void OrderBookImpl::Add(shared_ptr<Order>& o)
   {
     size += o->GetSize();
     orders.insert(o);
@@ -38,7 +38,7 @@ namespace Pricer
     unsigned int nextSize = 0;
     double nextPrice = 0;
     double value = 0;
-    std::set<Order*>::iterator it;
+    std::set<shared_ptr<Order> >::iterator it;
   
     for(it=orders.begin(); it!= orders.end();++it)
     {
@@ -60,14 +60,14 @@ namespace Pricer
     return value;
   }
 
-  bool OrderBookImpl::Reduce(Order* o)
+  bool OrderBookImpl::Reduce(shared_ptr<Order>& o)
   {
     if(orderIdMap.find(o->GetOrderId()) == orderIdMap.end())
     {
       return false;
     }
 
-    Order* orig = orderIdMap[o->GetOrderId()];
+    shared_ptr<Order> orig = orderIdMap[o->GetOrderId()];
     if(o->GetSize() < orig->GetSize())
     {
       orig->SetSize(orig->GetSize() - o->GetSize());
@@ -82,18 +82,10 @@ namespace Pricer
       orderIdMap.erase(o->GetOrderId());
       if(size + orig->GetSize() >= target)
         processTotal(o->GetTimeStamp());
-      delete orig;
     }
-    delete o;
     return true;
   }
   
   OrderBookImpl::~OrderBookImpl()
-  {
-    std::set<Order*>::iterator it;  
-    for(it=orders.begin(); it!= orders.end();++it)
-    {      
-      delete (*it);
-    }
-  }
+  {}
 }

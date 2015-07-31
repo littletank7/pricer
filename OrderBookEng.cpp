@@ -11,12 +11,11 @@ namespace Pricer
       bids = std::move(pobib);
       unique_ptr<OrderBookImpl> pobis(new OrderBookImpl(Sell, target, pwriter));
       asks = std::move(pobis);
-      pwriter.reset();
     }
     
     void OrderBookEng::Run()
     {
-      Order* order = nullptr;
+      shared_ptr<Order> order = nullptr;
       while(true)
       {
         order = input->Take();
