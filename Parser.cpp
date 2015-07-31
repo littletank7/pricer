@@ -15,10 +15,17 @@ namespace Pricer
   {
     while(true)
     {
-      std::string line("");
-      std::getline(std::cin, line);
-      if(line == "") return nullptr;
-      return parse(line);    
+      try
+      {
+        std::string line("");
+        std::getline(std::cin, line);
+        if(line == "") return nullptr;
+        return parse(line);
+      }
+      catch(std::exception& ex)
+      {
+        std::cerr << "Exception: " << ex.what() << std::endl;
+      }
     }
   }
 
@@ -31,35 +38,56 @@ namespace Pricer
          back_inserter(tokens));
     if(tokens.size() == addLen)
     {
-      shared_ptr<Order> order(new Order(std::stoul(tokens[timeIdx],nullptr,0), \
+      shared_ptr<Order> order(new Order(parseUint(tokens[timeIdx]), \
         tokens[oidIdx], parseAT(tokens[actionIdx])));
       order->SetSide(parseOT(tokens[sideIdx]));
-      order->SetPrice(std::stod(tokens[priceIdx]));
-      order->SetSize(std::stoul(tokens[sizeIdx],nullptr,0));
+      order->SetPrice(parseDouble(tokens[priceIdx]));
+      order->SetSize(parseUint(tokens[sizeIdx]));
       return order;
     }
     else if(tokens.size() == reduceLen)
     {
-      shared_ptr<Order> order(new Order(std::stoul(tokens[timeIdx],nullptr,0), \
+      shared_ptr<Order> order(new Order(parseUint(tokens[timeIdx]), \
         tokens[oidIdx], parseAT(tokens[actionIdx])));
-      order->SetSize(std::stoul(tokens[reduceSizeIdx],nullptr,0));
+      order->SetSize(parseUint(tokens[reduceSizeIdx]));
       return order;
     }
-    std::cerr << "invalid message" << endl;
-    return nullptr;
+    throw std::invalid_argument("invalid message");
   }
 
   ActionType Parser::parseAT(const string& s)
   {
     if(s != s_add && s!= s_reduce)
-      std::cerr << "invalid action" << endl;
+      throw std::invalid_argument("invalid action");
     return s == s_add ? Add : Reduce;
   }
 
   OrderType Parser::parseOT(const string& s)
   { 
     if(s != s_buy && s!= s_sell)
-      std::cerr << "invalid side" << endl;
+      throw std::invalid_argument("invalid side");
     return s == s_buy ? Buy : Sell;
+  }
+
+  template<typename T> bool Parser::isValidType(const std::string& s)
+  {
+    std::istringstream iss(s);
+    T t;
+    iss >> t;
+    return iss.eof() && !iss.fail();
+  }
+
+  double Parser::parseDouble(const string& s)
+  {
+    if(!isValidType<double>(s))
+      throw std::invalid_argument("invalid price");
+    return std::stod(s);
+  }
+
+  unsigned int Parser::parseUint(const string& s)
+  {
+    if(!isValidType<unsigned int>(s))
+      throw std::invalid_argument("invalid timestamp/size");
+    return std::stoul(s, nullptr ,0);
   }
 }

@@ -16,6 +16,9 @@ namespace Pricer
     shared_ptr<Order> parse(const std::string& line);
     ActionType parseAT(const std::string& s);
     OrderType parseOT(const std::string& s);
+    template<typename T> bool isValidType(const std::string& s);
+    double parseDouble(const std::string& s);
+    unsigned int parseUint(const std::string& s);
     
     static const int addLen = 6;
     static const int reduceLen = 4;

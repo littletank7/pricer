@@ -6,6 +6,8 @@ namespace Pricer
 
   void OrderBookImpl::Add(shared_ptr<Order>& o)
   {
+    if(orderIdMap.find(o->GetOrderId()) != orderIdMap.end())
+      throw std::invalid_argument("order id exsits");
     size += o->GetSize();
     orders.insert(o);
     orderIdMap.insert(std::make_pair(o->GetOrderId(), o));

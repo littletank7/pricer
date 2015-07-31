@@ -1,4 +1,5 @@
 #include "OrderBookEng.h"
+#include <iostream>
 
 namespace Pricer
 {
@@ -18,17 +19,27 @@ namespace Pricer
       shared_ptr<Order> order = nullptr;
       while(true)
       {
-        order = input->Take();
-        if(order == nullptr)
-          break;
-        if(order->GetAction() == Add)
+        try
         {
-          ((order->GetSide() == Buy) ? bids : asks)->Add(order);
-        }
-        else
+          order = input->Take();
+          if(order == nullptr)
+            break;
+          if(order->GetAction() == Add)
+          {
+            ((order->GetSide() == Buy) ? bids : asks)->Add(order);
+          }
+          else
+          {
+            if(!bids->Reduce(order))
+            {
+              if(!asks->Reduce(order))
+                std::cerr << "Exception: " << order->GetTimeStamp() <<" order " \
+                << order->GetOrderId() << " is not found." << std::endl;
+            }
+          }
+        }catch(std::exception& ex)
         {
-          if(!bids->Reduce(order))
-            asks->Reduce(order);
+          std::cerr << "Exception: " << ex.what() << std::endl;
         }
       }
     }
